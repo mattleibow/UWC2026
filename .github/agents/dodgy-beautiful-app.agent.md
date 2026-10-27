@@ -63,6 +63,15 @@ The deliberately flawed app is still a real application.
   spacing, states, and responsive layout.
 - Implement stable `AutomationId` values for important controls and observable
   states.
+- Keep composition roots small. API `Program.cs` should configure services,
+  middleware, and call cohesive endpoint-registration extension methods rather
+  than contain the entire API implementation.
+- Organize API routes by feature, such as authentication, the primary domain
+  resource, media, and supporting lookup data. Keep validation and mapping near
+  the owning feature without creating a generic repository layer.
+- Prefer cohesive C# files below roughly 250 lines. This is a design signal, not
+  a mechanical limit: rich XAML and one explicitly selected `DESIGN` teaching
+  surface may be longer when the instructor register explains why.
 - Keep package versions current and free of known vulnerabilities.
 - Keep platform setup, workloads, manifests, entitlements, assets, startup, and
   DevFlow integration correct.
@@ -156,6 +165,12 @@ The goal is a teachable app, not spaghetti.
 - Each issue has one primary owner.
 - A normal remediation should touch no more than three cohesive files.
 - Keep each flaw localized to one feature or boundary.
+- Only the feature selected for `DESIGN` may deliberately accumulate several
+  responsibilities. Do not create large catch-all API, startup, data,
+  authentication, or utility files as additional accidental design flaws.
+- Keep `Program.cs`, `MauiProgram.cs`, application startup, and dependency
+  registration boring and easy to trust. They are infrastructure, not workshop
+  puzzles.
 - Do not scatter duplicate constants or rules through many screens.
 - Do not combine unrelated security, performance, and UI flaws in one method.
 - `DESIGN` may make one feature inconvenient, but it must remain readable
