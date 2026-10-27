@@ -319,6 +319,9 @@ The goal is a teachable app, not spaghetti.
 - Each issue has one primary owner.
 - A normal remediation should touch no more than three cohesive files.
 - Keep each flaw localized to one feature or boundary.
+- Every expected remediation must name its target boundary and include a
+  post-fix cohesion/file-size check. A fix is invalid if it merely moves logic
+  into another catch-all endpoint, service, ViewModel, or utility.
 - Only the feature selected for `DESIGN` may deliberately accumulate several
   responsibilities. Do not create large catch-all API, startup, data,
   authentication, or utility files as additional accidental design flaws.
