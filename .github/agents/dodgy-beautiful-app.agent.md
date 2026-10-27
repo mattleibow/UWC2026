@@ -219,11 +219,12 @@ Activity Monitor, a screenshot, or one DevFlow memory sample.
 
    Use `dumpheap -stat`, `dumpheap -type <type>`, and `gcroot <address>` to find
    the retaining path. Record that path in the issue register.
-10. On Android or iOS targets, use the repository-local `dotnet-dsrouter`
-    through the diagnostics tools' `--dsrouter` or diagnostic-port support. If
-    the selected target cannot provide a dump, state the limitation and still
-    identify the retained type with GC-dump evidence plus the continued
-    callback/request evidence.
+10. Perform the detailed counters, trace, GC-dump, and dump/root investigation
+    on a directly attachable desktop target such as Mac Catalyst or Windows.
+    Validate the normal app journey on its intended mobile target with DevFlow,
+    but do not turn this workshop into a diagnostics-routing lesson. If no
+    directly attachable target is available, state the limitation and do not
+    claim a memory leak without equivalent retained-type evidence.
 11. When available, Visual Studio or PerfView may provide a visual view of
     `.gcdump` or dump artifacts. The recorded CLI evidence remains the
     cross-platform source of truth.

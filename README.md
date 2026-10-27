@@ -26,8 +26,8 @@ end-to-end validation of the real running app.
 Developer tools are pinned in [`dotnet-tools.json`](dotnet-tools.json). Restore
 them with `dotnet tool restore --configfile NuGet.Config` and invoke the MAUI
 CLI as `dotnet maui`. The same manifest pins `dotnet-counters`,
-`dotnet-gcdump`, `dotnet-dump`, `dotnet-trace`, and `dotnet-dsrouter` for
-evidence-based leak and performance investigations.
+`dotnet-gcdump`, `dotnet-dump`, and `dotnet-trace` for evidence-based leak and
+performance investigations.
 [`NuGet.Config`](NuGet.Config) clears inherited user and machine feeds so
 restores use only NuGet.org.
 
