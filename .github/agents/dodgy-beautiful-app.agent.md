@@ -116,13 +116,13 @@ the product.
 | ASYNC | The client blocks on asynchronous I/O | Keep I/O asynchronous so the UI remains responsive |
 | ERROR | A failed operation is swallowed or displayed as success | Report outcomes honestly and preserve useful diagnostics |
 | IDEMP | Repeated taps or retries create duplicate side effects | UI operation state and server-side idempotency solve different parts of the problem |
-| LIFE | Requests, timers, polling, or subscriptions continue after the owning screen disappears | Mobile work needs ownership, cancellation, and cleanup |
+| LIFE | Requests, dispatcher timers, polling, event handlers, or messenger subscriptions continue after the owning screen disappears and retain page state | Mobile work needs ownership, cancellation, unsubscription, disposal, and measurable lifetime boundaries |
 | NET | A timeout or offline transition loses input or blindly retries an operation with an unknown server outcome | Preserve state and retry selectively |
 | TIME | A calendar date or scheduled instant changes meaning across device, API, database, or time zone | Date-only values, local times, instants, and offsets are different contracts |
 | MEDIA | Media handling ignores permission denial, size, content type, stream lifetime, or right-sizing | Device permissions and uploaded files are resource and trust boundaries |
 | LIST | Repeated content places a `CollectionView` inside nested scrolling or an unconstrained stack, defeating virtualization and causing layout or scrolling problems at scale | MAUI list performance depends on bounded layout, virtualization, shallow templates, and predictable measurement |
 | IMAGE | A repeated UI surface displays many tiny glyphs or badges from packaged 1024×1024 raster assets, causing slow page rendering and excessive decoded-image memory | MAUI image memory follows decoded dimensions; use SVG/WebP or declare an appropriate `MauiImage BaseSize` so platform assets match their display purpose |
-| BINDING | One important page or item template omits `x:DataType`, leaving reflection-based bindings that fail silently after a property rename or typo | Compiled bindings provide build-time checking and improve startup and scrolling performance |
+| BINDING | With strict/source-compiled bindings enabled globally, one important page or item template explicitly opts out with `x:DataType=\"{x:Null}\"`, so a later property rename or typo fails silently at runtime | Mixed binding modes are supported, but compiled bindings provide build-time checking and improve startup and scrolling performance |
 | LIFETIME | A page-state ViewModel is registered as a singleton, so stale form, selection, or previous-user state survives navigation and account changes | Page/ViewModel lifetimes should match navigation; only intentional app-wide session state should be singleton |
 | VALIDATION | The API trusts client validation and accepts invalid state | Client validation is user experience; server validation protects invariants |
 | CONTRACT | Endpoints use inconsistent names, shapes, errors, or status codes | An API is a deliberate, testable agreement |
@@ -198,8 +198,10 @@ The goal is a teachable app, not spaghetti.
   single inspection/camera image as the `IMAGE` lesson, and do not degrade every
   screen.
 - `BINDING` should be confined to one important page or data template and fixed
-  by adding the correct `x:DataType` and typed bindings. `LIFETIME` should be
-  confined to DI registration plus the affected page-state ViewModel.
+  by replacing the explicit `x:Null` opt-out with the correct `x:DataType` and
+  typed bindings. The rest of the app must keep source-generated/strict
+  bindings enabled. `LIFETIME` should be confined to DI registration plus the
+  affected page-state ViewModel.
 - For a normal six-hour workshop, select at most two of `LIST`, `IMAGE`,
   `BINDING`, and `LIFETIME` unless the product specification makes additional
   MAUI-specific lessons unusually natural and the schedule has room.
@@ -341,6 +343,8 @@ Record only checks actually performed:
 - screenshot paths and represented sizes/orientations/themes;
 - loading, empty, error, offline, permission-denied, duplicate-action,
   conflict, and large-data states;
+- profiler sessions and samples used for lifecycle, memory, GC, thread, network,
+  jank, or UI-stall evidence;
 - every flaw reproduction;
 - and any host or platform limitation.
 
@@ -372,10 +376,17 @@ DevFlow is required development infrastructure, not a deliberate flaw.
    logs, network inspection, and profiling. Use CLI commands as fallback.
 9. Drive the complete happy path and every documented failure state by
    `AutomationId`, not coordinates.
-10. Inspect screenshots rather than merely capturing them. Iterate on visual
+10. When `LIFE`, `LIFETIME`, `LIST`, `IMAGE`, or `PERF` is selected, discover
+    the DevFlow profiler capabilities and collect samples before, during, and
+    after the reproduction. For lifetime leaks, repeatedly navigate into and
+    out of the affected screen, then compare managed memory, native memory when
+    available, GC counts, thread count, jank frames, UI-thread stalls, and
+    network request rate. Stop the profiler cleanly and record the evidence in
+    the validation report.
+11. Inspect screenshots rather than merely capturing them. Iterate on visual
     quality, clipping, overflow, semantics, state transitions, and touch
     targets.
-11. Repeat important flows at relevant sizes, orientations, and themes where
+12. Repeat important flows at relevant sizes, orientations, and themes where
     the host supports them.
 
 ## Build order

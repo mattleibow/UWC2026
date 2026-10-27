@@ -67,6 +67,10 @@ use `maui project version` for platform app versions.
 - Use `Grid`, `FlexLayout`, and stack layouts intentionally. Use
   `CollectionView` for repeated data and never wrap it in a `ScrollView`.
 - Use compiled bindings and typed `DataTemplate` declarations.
+- Keep MAUI XAML binding source compilation and strict XAML compilation enabled
+  through `Directory.Build.props`. Pages and templates use correct `x:DataType`
+  unless the Dodgy Beautiful App agent explicitly selects and documents one
+  local `BINDING` opt-out as a teaching flaw.
 - Put repeated colors, typography, spacing, and control styles in resource
   dictionaries. Avoid absolute coordinates and arbitrary fixed sizes.
 - Every data-driven screen needs deliberate loading, content, empty, error, and
