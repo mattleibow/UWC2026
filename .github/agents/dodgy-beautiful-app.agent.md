@@ -42,9 +42,16 @@ Before changing code:
    CLI reports an update. Run
    `dotnet maui devflow init --target github` if repository DevFlow skills or
    MCP configuration are absent.
-7. Identify one continuous user journey that can carry the workshop from the
+7. Discover and invoke relevant available .NET MAUI skills before building.
+   Prefer `maui-current-apis`, `maui-project-structure`,
+   `maui-app-architecture`, `maui-ui-patterns`, `maui-accessibility`,
+   `maui-performance`, `maui-unit-testing`, `maui-devflow-onboard`, and
+   `maui-devflow-debug` when they are available. If a named skill is
+   unavailable, follow the equivalent repository instructions rather than
+   guessing.
+8. Identify one continuous user journey that can carry the workshop from the
    opening demo through every remediation stage.
-8. Select a coherent issue set from the learning catalog below. Write a short
+9. Select a coherent issue set from the learning catalog below. Write a short
    plan mapping each selected issue to a product feature, an observable symptom,
    a workshop stage, and a small remediation surface.
 
@@ -113,6 +120,8 @@ the product.
 | NET | A timeout or offline transition loses input or blindly retries an operation with an unknown server outcome | Preserve state and retry selectively |
 | TIME | A calendar date or scheduled instant changes meaning across device, API, database, or time zone | Date-only values, local times, instants, and offsets are different contracts |
 | MEDIA | Media handling ignores permission denial, size, content type, stream lifetime, or right-sizing | Device permissions and uploaded files are resource and trust boundaries |
+| LIST | Repeated content places a `CollectionView` inside nested scrolling or an unconstrained stack, defeating virtualization and causing layout or scrolling problems at scale | MAUI list performance depends on bounded layout, virtualization, shallow templates, and predictable measurement |
+| IMAGE | Small list thumbnails decode original full-resolution camera/downloaded images, or packaged raster assets are far larger than their display size | Image memory is based on decoded dimensions; use thumbnails, display-sized decoding, SVG/WebP, and `MauiImage` sizing |
 | VALIDATION | The API trusts client validation and accepts invalid state | Client validation is user experience; server validation protects invariants |
 | CONTRACT | Endpoints use inconsistent names, shapes, errors, or status codes | An API is a deliberate, testable agreement |
 | ENTITY | Persistence entities are accepted or returned directly | Public contracts should not expose internal fields or allow overposting |
@@ -121,7 +130,7 @@ the product.
 | AUTHZ | One authenticated user can access another user's resource by changing an identifier | Authentication establishes identity; authorization protects each object |
 | SECRET | A privileged service credential or authority key is embedded in the mobile client | A distributed public client cannot keep privileged authority |
 | TOKEN | A user token is stored in ordinary preferences/files, placed in a URL, or logged | Use platform credential storage and redact sensitive values |
-| PERF | A list/feed is unbounded, chatty, filtered in memory, N+1, or transfers full media | Measure query count, payload, memory, and latency; request only what the screen needs |
+| PERF | A list/feed is unbounded, chatty, filtered in memory, N+1, or returns unnecessarily large payloads | Measure query count, payload, memory, and latency; request only what the screen needs |
 | OBS | A mobile failure cannot be connected to its API request | Propagate correlation and structured context without leaking secrets |
 | CONFIG | API addresses, ports, certificates, or environment assumptions are hardcoded | Simulators, devices, hosts, and environments differ |
 
@@ -180,6 +189,13 @@ The goal is a teachable app, not spaghetti.
   or storage boundaries.
 - Performance flaws belong in measurable query, payload, media, or rendering
   paths.
+- MAUI-specific flaws must remain surgical. `LIST` should normally be fixed in
+  one list page/template, and `IMAGE` in the thumbnail/resource pipeline plus
+  the affected template. Do not degrade every screen.
+- Missing `x:DataType`, service locators, unregistered route strings, and other
+  accidental stale patterns are not silently accepted. Use current MAUI
+  architecture by default unless one is deliberately selected and documented
+  as the teaching issue.
 - The corrected architecture should prefer concrete classes until a real
   platform or process boundary earns an abstraction.
 
@@ -219,7 +235,9 @@ client, local storage, URLs, and logs. Typical issues: `AUTH`, `AUTHZ`, `SECRET`
 ### Stage 5 — Add real volume and media
 
 Use deterministic scale data and large synthetic media. Measure the system.
-Typical issues: `MEDIA`, `PERF`.
+Typical issues: `MEDIA`, `LIST`, `IMAGE`, `PERF`. Select only the issues that
+produce distinct demonstrations in the chosen product; do not count the same
+oversized image path twice.
 
 ### Stage 6 — Leave the developer machine
 
