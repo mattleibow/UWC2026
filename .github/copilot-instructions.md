@@ -125,6 +125,10 @@ current prerelease packages and CLI because the toolkit is experimental.
 
 - Inspect `dotnet --info`, installed workloads, target frameworks, and package
   management before changing project files.
+- Restore and use the repository-local `dotnet-counters`, `dotnet-gcdump`,
+  `dotnet-dump`, `dotnet-trace`, and `dotnet-dsrouter` tools for runtime
+  performance and leak investigations. Memory growth is a triage signal;
+  identify the accumulating type or retention root before calling it a leak.
 - Restore and build the smallest affected projects first, then the solution.
 - Run focused tests for changed behavior and API integration tests for changed
   contracts or data access.

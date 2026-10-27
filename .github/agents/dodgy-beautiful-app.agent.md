@@ -124,6 +124,9 @@ framework rule is commonly repeated.
   normal cleanup and GC opportunities, and demonstrate a continuing timer,
   subscription, request rate, retained state, thread growth, or sustained memory
   trend. One high memory sample is not proof of a leak.
+- Treat increasing memory as a trigger for investigation, not the finding.
+  Identify which page, ViewModel, timer, subscription, delegate, or collection
+  remains alive and why.
 - For accessibility claims, inspect semantics/focus/layout and use platform
   assistive tooling when available. A screenshot alone is not proof.
 - For concurrency, authorization, idempotency, and network ambiguity, exercise
@@ -137,6 +140,100 @@ framework rule is commonly repeated.
   large source file is decoded inefficiently after MAUI processing.
 - If a candidate cannot be reproduced reliably and safely, omit it or replace
   it before declaring completion.
+
+## .NET leak and performance investigation
+
+When `LIFE` is selected, introduce no more than one or two concrete retention
+mechanisms. Prefer a dispatcher timer/callback or an event/messenger
+subscription that retains one page or ViewModel. Do not create a web of leaks.
+
+Use the repository-local diagnostics tools. Do not rely solely on Task Manager,
+Activity Monitor, a screenshot, or one DevFlow memory sample.
+
+1. Use DevFlow to establish the exact navigation or interaction loop and prove
+   that callbacks, telemetry, logs, or network requests continue after the
+   screen should be gone.
+2. Capture an idle baseline with:
+
+   ```bash
+   dotnet tool run dotnet-counters -- monitor \
+     --process-id <pid> \
+     --counters System.Runtime \
+     --duration 00:00:30
+   ```
+
+3. Capture a baseline GC dump:
+
+   ```bash
+   dotnet tool run dotnet-gcdump -- collect \
+     --process-id <pid> \
+     --output instructor/evidence/life-before.gcdump
+   ```
+
+4. Repeat the navigation/operation loop enough times to produce a stable,
+   observable symptom, then collect counters and
+   `instructor/evidence/life-after.gcdump`.
+5. Run `dotnet tool run dotnet-gcdump -- report` on both captures and identify
+   the concrete page, ViewModel, timer, subscription, or related type whose
+   count or retained size accumulates.
+6. Capture a trace around the reproduction:
+
+   ```bash
+   dotnet tool run dotnet-trace -- collect \
+     --process-id <pid> \
+     --profile gc-verbose \
+     --duration 00:00:30 \
+     --output instructor/evidence/life.nettrace
+   ```
+
+7. Convert the trace for a classroom-friendly flame graph:
+
+   ```bash
+   dotnet tool run dotnet-trace -- convert \
+     instructor/evidence/life.nettrace \
+     --format Speedscope \
+     --output instructor/evidence/life
+   ```
+
+   Open the generated Speedscope file locally or in `speedscope.app` only for
+   synthetic workshop traces. Do not upload confidential or third-party trace
+   data. Speedscope explains timing and call stacks; it is not heap-root proof.
+8. Use the DevFlow Inspector profiler as the live classroom visualization:
+
+   ```bash
+   dotnet maui devflow broker start
+   ```
+
+   Open `http://localhost:19223/inspector/` and show memory, GC, CPU, frame, or
+   jank behavior while repeating the interaction. Use the .NET diagnostics
+   artifacts to identify the retained type and root behind that visible trend.
+9. Where the runtime target and host support dump collection, run:
+
+   ```bash
+   dotnet tool run dotnet-dump -- collect \
+     --process-id <pid> \
+     --output instructor/evidence/life.dmp
+
+   dotnet tool run dotnet-dump -- analyze instructor/evidence/life.dmp
+   ```
+
+   Use `dumpheap -stat`, `dumpheap -type <type>`, and `gcroot <address>` to find
+   the retaining path. Record that path in the issue register.
+10. On Android or iOS targets, use the repository-local `dotnet-dsrouter`
+    through the diagnostics tools' `--dsrouter` or diagnostic-port support. If
+    the selected target cannot provide a dump, state the limitation and still
+    identify the retained type with GC-dump evidence plus the continued
+    callback/request evidence.
+11. When available, Visual Studio or PerfView may provide a visual view of
+    `.gcdump` or dump artifacts. The recorded CLI evidence remains the
+    cross-platform source of truth.
+12. After remediation, repeat the same DevFlow loop, counters, GC dump, and trace.
+   Show that callbacks stop and the identified type no longer accumulates.
+
+Do not register `LIFE` as proven until the accumulating type or retention
+mechanism has been identified. Keep raw evidence private under
+`instructor/evidence/` and reference it from the issue register and validation
+report.
 
 ### Core learning catalog
 
@@ -314,6 +411,7 @@ Create after the application exists:
 - `instructor/workshop-flow.md`
 - `instructor/clean-architecture.md`
 - `instructor/validation-report.md`
+- `instructor/evidence/`
 
 The `instructor` directory is private. Do not link it from the public README,
 product specification, application, source comments, API descriptions, or UI.
@@ -380,6 +478,8 @@ Record only checks actually performed:
   conflict, and large-data states;
 - profiler sessions and samples used for lifecycle, memory, GC, thread, network,
   jank, or UI-stall evidence;
+- .NET counter output, traces, GC dumps, dump analysis, and retention roots used
+  to identify lifecycle leaks or performance causes;
 - every flaw reproduction and the evidence that confirmed it;
 - and any host or platform limitation.
 
