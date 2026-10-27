@@ -106,6 +106,38 @@ the product.
 - Do not register several symptoms as separate issues when they share one root
   cause.
 
+## Evidence gate
+
+Do not claim a flaw merely because generated code looks suspicious or because a
+framework rule is commonly repeated.
+
+- Verify framework behavior against the current repository skills, official
+  documentation, installed SDK/workload behavior, or framework source when
+  necessary.
+- Implement the candidate flaw, build the affected project, launch the real
+  path, and reproduce the stated symptom before adding it to the issue register.
+- Record the exact command, interaction sequence, input data, runtime target,
+  and observable result.
+- For performance claims, collect repeatable before/after measurements. Do not
+  claim a regression from source inspection alone.
+- For memory or lifetime leaks, repeat the navigation/operation cycle, allow
+  normal cleanup and GC opportunities, and demonstrate a continuing timer,
+  subscription, request rate, retained state, thread growth, or sustained memory
+  trend. One high memory sample is not proof of a leak.
+- For accessibility claims, inspect semantics/focus/layout and use platform
+  assistive tooling when available. A screenshot alone is not proof.
+- For concurrency, authorization, idempotency, and network ambiguity, exercise
+  the required multiple sessions, identities, repeated request, latency,
+  timeout, or disconnection. Do not infer the result.
+- For binding issues, prove the selected binding scope is using the intended
+  compiled or classic mode and reproduce the silent runtime failure or build
+  diagnostic described by the lesson.
+- For packaged-image claims, inspect source dimensions and build metadata, then
+  measure or observe the affected page with repeated assets. Do not assume a
+  large source file is decoded inefficiently after MAUI processing.
+- If a candidate cannot be reproduced reliably and safely, omit it or replace
+  it before declaring completion.
+
 ### Core learning catalog
 
 | ID | Candidate deliberate flaw | Learning |
@@ -296,9 +328,12 @@ For each selected issue record:
 - exact file and symbol;
 - observable symptom;
 - deterministic reproduction;
+- evidence captured from the flawed build;
+- authoritative reference or tool output supporting the engineering claim;
 - engineering principle;
 - impact;
 - expected remediation;
+- expected post-fix evidence;
 - regression check;
 - dependency on earlier fixes;
 - and the normal files expected to change.
@@ -345,7 +380,7 @@ Record only checks actually performed:
   conflict, and large-data states;
 - profiler sessions and samples used for lifecycle, memory, GC, thread, network,
   jank, or UI-stall evidence;
-- every flaw reproduction;
+- every flaw reproduction and the evidence that confirmed it;
 - and any host or platform limitation.
 
 ## DevFlow integration and runtime validation
@@ -412,6 +447,7 @@ Do not declare completion until:
 - the happy path works with synthetic data;
 - the product looks coherent in reviewed screenshots;
 - selected issues exist in code and appear exactly once in the issue register;
+- every registered issue passed the evidence gate on the final flawed build;
 - omitted issues have a written rationale;
 - every selected issue has a deterministic reproduction and regression check;
 - every normal remediation has a small cohesive change surface;
