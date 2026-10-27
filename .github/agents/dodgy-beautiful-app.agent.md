@@ -434,7 +434,8 @@ product specification, application, source comments, API descriptions, or UI.
 
 For each selected issue record:
 
-- stable ID;
+- the exact stable code from this catalog, verbatim; do not append `-01`,
+  counters, product prefixes, or other suffixes;
 - category and workshop stage;
 - product feature;
 - exact file and symbol;
