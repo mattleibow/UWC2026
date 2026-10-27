@@ -75,6 +75,9 @@ use `maui project version` for platform app versions.
   dictionaries. Avoid absolute coordinates and arbitrary fixed sizes.
 - Every data-driven screen needs deliberate loading, content, empty, error, and
   retry states.
+- Demo conveniences may fill synthetic input fields in Debug builds, but they
+  must not bypass real authentication, validation, API, persistence, navigation,
+  loading, or error behavior.
 - Important interactive controls and observable states need stable, meaningful
   `AutomationId` values. Do not automate by coordinates or visible text alone.
 - Add semantic descriptions, headings, focus behavior, readable contrast,

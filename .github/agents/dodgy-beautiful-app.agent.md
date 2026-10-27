@@ -66,6 +66,13 @@ The deliberately flawed app is still a real application.
   and project conventions.
 - Restore, compile, launch, navigate, persist data, and exercise real behavior.
 - Use real UI and assets, not disconnected mock screens.
+- Implement genuine product workflows. Demo helpers may populate synthetic
+  input values in Debug builds, but must never bypass the real command, API,
+  validation, authentication, persistence, navigation, error, or loading path.
+- Do not add fake success buttons such as “Log in as Alice,” “Create demo
+  record,” or “Skip setup” when the real product requires credentials or user
+  input. A helper may fill the real username/password fields; the user must
+  still invoke the real Sign In action.
 - Produce a visually intentional interface with coherent color, typography,
   spacing, states, and responsive layout.
 - Implement stable `AutomationId` values for important controls and observable

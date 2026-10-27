@@ -56,9 +56,9 @@ Reviews submitted loadouts and grants official technical clearance.
 
 For demonstrations, the app uses synthetic local accounts:
 
-- Alice, captain of Team Voltage;
-- Avery, pit engineer for Team Voltage;
-- Bob, captain of rival Team Torque.
+- `alice` / `P@55w0rd!` — captain of Team Voltage;
+- `avery` / `P@55w0rd!` — pit engineer for Team Voltage;
+- `bob` / `P@55w0rd!` — captain of rival Team Torque.
 
 ## Core experience
 
@@ -83,9 +83,16 @@ Team members can later reopen the same robot and continue preparing it.
 
 ### Sign in
 
-Users sign in to their team account. The workshop build may provide a quick
-account chooser for synthetic demonstration users, but the product should still
-look and behave like a credible sign-in experience.
+Users sign in to their team account with a username and password.
+
+The Debug workshop build may provide small **Fill Alice**, **Fill Avery**, and
+**Fill Bob** helpers to reduce typing during a presentation. These helpers only
+populate the username and password fields. They must not authenticate the user,
+navigate, create a session, or bypass the normal Sign In action and API.
+
+The sign-in screen must still look and behave like a credible product,
+including loading, invalid-credential, retry, focus, keyboard, and password
+visibility behavior.
 
 ### Pit Board
 
