@@ -497,8 +497,18 @@ DevFlow is required development infrastructure, not a deliberate flaw.
 4. Add the Mac Catalyst Debug network-server entitlement when required.
 5. Give important pages, controls, forms, lists, loading states, empty states,
    errors, conflicts, and retry actions stable `AutomationId` values.
-6. Build and launch a runnable target.
-7. Verify:
+6. Use the fastest directly attachable desktop target for the initial
+   build-launch-inspect-fix loop: Mac Catalyst on macOS, Windows on Windows, or
+   GTK when the repository is configured for it. Do not make the audience wait
+   through repeated emulator deployment while basic UI and logic are still
+   changing.
+7. On the desktop target, complete the happy path, visual refinement, layout
+   diagnostics, logs, network inspection, and detailed .NET
+   performance/leak investigation.
+8. After the shared journey is stable, run at least one intended mobile
+   simulator/emulator target to validate touch behavior, permissions,
+   platform-specific layout, lifecycle, secure storage, and connectivity.
+9. Verify each running target with:
 
    ```bash
    dotnet maui devflow diagnose
@@ -508,21 +518,21 @@ DevFlow is required development infrastructure, not a deliberate flaw.
    dotnet maui devflow ui diagnostics --profile agent
    ```
 
-8. Prefer the `maui-devflow` MCP tools for interaction, assertions, screenshots,
+10. Prefer the `maui-devflow` MCP tools for interaction, assertions, screenshots,
    logs, network inspection, and profiling. Use CLI commands as fallback.
-9. Drive the complete happy path and every documented failure state by
+11. Drive the complete happy path and every documented failure state by
    `AutomationId`, not coordinates.
-10. When `LIFE`, `LIFETIME`, `LIST`, `IMAGE`, or `PERF` is selected, discover
+12. When `LIFE`, `LIFETIME`, `LIST`, `IMAGE`, or `PERF` is selected, discover
     the DevFlow profiler capabilities and collect samples before, during, and
     after the reproduction. For lifetime leaks, repeatedly navigate into and
     out of the affected screen, then compare managed memory, native memory when
     available, GC counts, thread count, jank frames, UI-thread stalls, and
     network request rate. Stop the profiler cleanly and record the evidence in
     the validation report.
-11. Inspect screenshots rather than merely capturing them. Iterate on visual
+13. Inspect screenshots rather than merely capturing them. Iterate on visual
     quality, clipping, overflow, semantics, state transitions, and touch
     targets.
-12. Repeat important flows at relevant sizes, orientations, and themes where
+14. Repeat important flows at relevant sizes, orientations, and themes where
     the host supports them.
 
 ## Build order

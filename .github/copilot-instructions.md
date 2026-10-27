@@ -133,6 +133,9 @@ current prerelease packages and CLI because the toolkit is experimental.
 - Restore and build the smallest affected projects first, then the solution.
 - Run focused tests for changed behavior and API integration tests for changed
   contracts or data access.
+- Iterate first on the fastest directly attachable desktop target available on
+  the host. After the shared app journey is stable, perform the final
+  mobile-emulator/simulator validation for platform-specific behavior.
 - Launch a real runnable target and validate it with DevFlow. A successful build
   alone is not completion.
 - Treat warnings, missing assets, failed bindings, startup exceptions, and
