@@ -104,6 +104,12 @@ the product.
 - A six-hour workshop will usually use 12–18 issues.
 - Cover multiple dimensions: maintainability, UI quality, reliability,
   API/data design, security/privacy, performance, observability, and delivery.
+- For a MAUI application, normally select one or two of `LIST`, `IMAGE`,
+  `BINDING`, and `LIFETIME` when the product supports a clear localized
+  demonstration.
+- When the product naturally contains timers, polling, events, or messenger
+  subscriptions and a directly attachable target is available, select `LIFE`
+  and implement one or two concrete, diagnosable retention mechanisms.
 - Prefer issues that produce a visible or measurable demonstration.
 - Do not add an awkward product feature solely to force an issue into the app.
 - A small feature adjustment is acceptable when it improves the product and
