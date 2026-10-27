@@ -121,7 +121,9 @@ the product.
 | TIME | A calendar date or scheduled instant changes meaning across device, API, database, or time zone | Date-only values, local times, instants, and offsets are different contracts |
 | MEDIA | Media handling ignores permission denial, size, content type, stream lifetime, or right-sizing | Device permissions and uploaded files are resource and trust boundaries |
 | LIST | Repeated content places a `CollectionView` inside nested scrolling or an unconstrained stack, defeating virtualization and causing layout or scrolling problems at scale | MAUI list performance depends on bounded layout, virtualization, shallow templates, and predictable measurement |
-| IMAGE | Small list thumbnails decode original full-resolution camera/downloaded images, or packaged raster assets are far larger than their display size | Image memory is based on decoded dimensions; use thumbnails, display-sized decoding, SVG/WebP, and `MauiImage` sizing |
+| IMAGE | A repeated UI surface displays many tiny glyphs or badges from packaged 1024×1024 raster assets, causing slow page rendering and excessive decoded-image memory | MAUI image memory follows decoded dimensions; use SVG/WebP or declare an appropriate `MauiImage BaseSize` so platform assets match their display purpose |
+| BINDING | One important page or item template omits `x:DataType`, leaving reflection-based bindings that fail silently after a property rename or typo | Compiled bindings provide build-time checking and improve startup and scrolling performance |
+| LIFETIME | A page-state ViewModel is registered as a singleton, so stale form, selection, or previous-user state survives navigation and account changes | Page/ViewModel lifetimes should match navigation; only intentional app-wide session state should be singleton |
 | VALIDATION | The API trusts client validation and accepts invalid state | Client validation is user experience; server validation protects invariants |
 | CONTRACT | Endpoints use inconsistent names, shapes, errors, or status codes | An API is a deliberate, testable agreement |
 | ENTITY | Persistence entities are accepted or returned directly | Public contracts should not expose internal fields or allow overposting |
@@ -190,12 +192,21 @@ The goal is a teachable app, not spaghetti.
 - Performance flaws belong in measurable query, payload, media, or rendering
   paths.
 - MAUI-specific flaws must remain surgical. `LIST` should normally be fixed in
-  one list page/template, and `IMAGE` in the thumbnail/resource pipeline plus
-  the affected template. Do not degrade every screen.
+  one list page/template. `IMAGE` should use a small repeated set of oversized
+  packaged UI assets on one screen and be fixed through the affected template
+  plus asset format or `MauiImage BaseSize` metadata. Do not use the user's
+  single inspection/camera image as the `IMAGE` lesson, and do not degrade every
+  screen.
+- `BINDING` should be confined to one important page or data template and fixed
+  by adding the correct `x:DataType` and typed bindings. `LIFETIME` should be
+  confined to DI registration plus the affected page-state ViewModel.
+- For a normal six-hour workshop, select at most two of `LIST`, `IMAGE`,
+  `BINDING`, and `LIFETIME` unless the product specification makes additional
+  MAUI-specific lessons unusually natural and the schedule has room.
 - Missing `x:DataType`, service locators, unregistered route strings, and other
-  accidental stale patterns are not silently accepted. Use current MAUI
-  architecture by default unless one is deliberately selected and documented
-  as the teaching issue.
+  accidental stale patterns elsewhere are not silently accepted. Use current
+  MAUI architecture by default unless the exact pattern is deliberately
+  selected and documented as the teaching issue.
 - The corrected architecture should prefer concrete classes until a real
   platform or process boundary earns an abstraction.
 
@@ -213,13 +224,13 @@ quality and which are assumptions.
 ### Stage 1 — Change one feature
 
 Use a small product change to expose maintainability, duplicated rules, and UI
-quality. Typical issues: `DESIGN`, `RULES`, `UX`.
+quality. Typical issues: `DESIGN`, `RULES`, `UX`, `BINDING`.
 
 ### Stage 2 — Operate under pressure
 
 Add latency, repeat the primary action, interrupt connectivity, and navigate
 away while work is active. Typical issues: `ASYNC`, `ERROR`, `IDEMP`, `NET`,
-`OBS`, `LIFE`.
+`OBS`, `LIFE`, `LIFETIME`.
 
 ### Stage 3 — Make the API authoritative
 
@@ -234,10 +245,10 @@ client, local storage, URLs, and logs. Typical issues: `AUTH`, `AUTHZ`, `SECRET`
 
 ### Stage 5 — Add real volume and media
 
-Use deterministic scale data and large synthetic media. Measure the system.
-Typical issues: `MEDIA`, `LIST`, `IMAGE`, `PERF`. Select only the issues that
-produce distinct demonstrations in the chosen product; do not count the same
-oversized image path twice.
+Use deterministic scale data, repeated oversized packaged UI assets, and
+synthetic user media. Measure the system. Typical issues: `MEDIA`, `LIST`,
+`IMAGE`, `PERF`. Keep camera/upload behavior under `MEDIA` and packaged
+asset-decoding behavior under `IMAGE`; do not count the same image path twice.
 
 ### Stage 6 — Leave the developer machine
 
